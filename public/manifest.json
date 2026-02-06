@@ -1,0 +1,16 @@
+{
+    "name": "ZEERAK SHAHZAD | Cybersecurity Portfolio",
+    "short_name": "ZS Portfolio",
+    "description": "Cybersecurity Analyst & ISO 27001 Lead Auditor specializing in SOC operations and threat detection.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#f59e0b",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}
