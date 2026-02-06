@@ -4,8 +4,6 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // Set base for GitHub Pages - update 'portfolio' to your repo name
-  base: '/portfolio/',
   plugins: [react()],
   resolve: {
     alias: {
