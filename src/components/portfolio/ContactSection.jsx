@@ -11,7 +11,7 @@ const contactInfo = [
 ];
 
 // Animated input component
-const AnimatedInput = ({ label, type = 'text', value, onChange, required, rows }) => {
+const AnimatedInput = ({ label, type = 'text', value, onChange, required, rows = undefined }) => {
   const [isFocused, setIsFocused] = useState(false);
   const hasValue = value && value.length > 0;
 

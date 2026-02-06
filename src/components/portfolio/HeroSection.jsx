@@ -47,7 +47,7 @@ const AnimatedText = ({ text, className, delay = 0, isMobile = false }) => {
 };
 
 // Magnetic button effect
-const MagneticButton = ({ children, className, href, onClick }) => {
+const MagneticButton = ({ children, className, href, onClick = undefined }) => {
   const ref = useRef(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
