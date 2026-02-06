@@ -5,6 +5,7 @@ import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { Analytics } from '@vercel/analytics/react';
 
 // Lazy load the page not found component
 const PageNotFound = lazy(() => import('./lib/PageNotFound'));
@@ -55,6 +56,7 @@ function App() {
       </Router>
       <Toaster />
       <SpeedInsights />
+      <Analytics />
     </QueryClientProvider>
   )
 }
