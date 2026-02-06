@@ -55,16 +55,14 @@ export default function ContactSection() {
     <section id="contact" className="relative py-32 md:py-48 bg-black overflow-hidden noise-overlay">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Background Accents */}
-      <motion.div
-        animate={{ opacity: [0.2, 0.4, 0.2] }}
-        transition={{ duration: 10, repeat: Infinity }}
-        className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-gradient-to-r from-amber-500/10 to-transparent rounded-full blur-[100px]"
+      {/* Background Accents - Static for performance */}
+      <div
+        className="absolute top-1/4 left-0 w-[400px] h-[400px] bg-gradient-to-r from-amber-500/10 to-transparent rounded-full blur-[60px]"
+        style={{ transform: 'translateZ(0)' }}
       />
-      <motion.div
-        animate={{ opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 8, repeat: Infinity }}
-        className="absolute bottom-1/4 right-0 w-[400px] h-[400px] bg-gradient-to-l from-red-500/10 to-transparent rounded-full blur-[100px]"
+      <div
+        className="absolute bottom-1/4 right-0 w-[300px] h-[300px] bg-gradient-to-l from-red-500/10 to-transparent rounded-full blur-[60px]"
+        style={{ transform: 'translateZ(0)' }}
       />
 
       {/* Large Background Text */}
