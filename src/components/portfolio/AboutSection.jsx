@@ -55,21 +55,35 @@ export default function AboutSection() {
   const imageRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
+  // Detect mobile/touch device
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
   });
 
-  // Smoother parallax with spring physics
+  // Smoother parallax with spring physics - disabled on mobile
   const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 };
-  const imageY = useSpring(useTransform(scrollYProgress, [0, 1], [80, -80]), springConfig);
-  const imageScale = useSpring(useTransform(scrollYProgress, [0, 0.5], [0.95, 1]), springConfig);
-  const imageRotate = useSpring(useTransform(scrollYProgress, [0, 1], [-2, 2]), springConfig);
+  const imageY = useSpring(useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [80, -80]), springConfig);
+  const imageScale = useSpring(useTransform(scrollYProgress, [0, 0.5], isMobile ? [1, 1] : [0.95, 1]), springConfig);
+  const imageRotate = useSpring(useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [-2, 2]), springConfig);
 
-  // Mouse parallax for image
+  // Mouse parallax for image - disabled on mobile
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
+    if (isMobile) return; // Skip mouse tracking on mobile
+
     const handleMouseMove = (e) => {
       if (!imageRef.current) return;
       const rect = imageRef.current.getBoundingClientRect();
@@ -80,7 +94,7 @@ export default function AboutSection() {
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [isMobile]);
 
   const facts = [
     { label: 'Location', value: 'Karachi, Pakistan', icon: MapPin },
@@ -175,20 +189,22 @@ export default function AboutSection() {
                     }}
                   />
 
-                  {/* Gradient Overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20" />
+                  {/* Gradient Overlays - Desktop only for clean mobile view */}
+                  <div className="hidden sm:block absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="hidden sm:block absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent" />
 
-                  {/* Color tint */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-amber-900/20 via-transparent to-red-900/20 mix-blend-overlay" />
+                  {/* Minimal mobile gradient - just bottom fade */}
+                  <div className="sm:hidden absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black to-transparent" />
 
-                  {/* Hover glow */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-t from-amber-500/10 via-transparent to-transparent" />
+                  {/* Color tint - desktop only */}
+                  <div className="hidden sm:block absolute inset-0 bg-gradient-to-br from-amber-900/10 via-transparent to-red-900/10 mix-blend-overlay" />
 
-                  {/* Scan line effect */}
+                  {/* Hover glow - desktop only */}
+                  <div className="hidden sm:block absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-t from-amber-500/10 via-transparent to-transparent" />
+
+                  {/* Scan line effect - desktop only for performance */}
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent"
+                    className="hidden sm:block absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent"
                     animate={{ y: ['100%', '-100%'] }}
                     transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
                   />
