@@ -3,12 +3,26 @@ import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-mo
 import { ArrowDown, ChevronDown } from 'lucide-react';
 import { scrollTo } from '../../hooks/useLenis';
 
-// Animated text reveal component with stagger
-const AnimatedText = ({ text, className, delay = 0 }) => {
+// Animated text reveal component with stagger - simplified for mobile
+const AnimatedText = ({ text, className, delay = 0, isMobile = false }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
   const letters = text.split('');
+
+  if (isMobile) {
+    return (
+      <motion.span
+        ref={ref}
+        className={className}
+        initial={{ opacity: 0 }}
+        animate={isInView ? { opacity: 1 } : {}}
+        transition={{ duration: 0.8, delay }}
+      >
+        {text}
+      </motion.span>
+    );
+  }
 
   return (
     <span ref={ref} className={className}>
@@ -38,6 +52,9 @@ const MagneticButton = ({ children, className, href, onClick }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e) => {
+    // Disable magnetic effect on mobile/touch
+    if (window.matchMedia && window.matchMedia('(hover: none)').matches) return;
+
     const { clientX, clientY } = e;
     const { left, top, width, height } = ref.current.getBoundingClientRect();
     const x = (clientX - left - width / 2) * 0.3;
@@ -69,6 +86,15 @@ const MagneticButton = ({ children, className, href, onClick }) => {
 
 export default function HeroSection() {
   const containerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -86,7 +112,8 @@ export default function HeroSection() {
   };
 
   // Optimized floating particles with GPU acceleration
-  const particles = Array.from({ length: 12 }, (_, i) => ({
+  // Reduce particles on mobile for performance
+  const particles = Array.from({ length: isMobile ? 4 : 12 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
@@ -100,6 +127,7 @@ export default function HeroSection() {
 
   useEffect(() => {
     const handleMouseMove = (e) => {
+      if (window.innerWidth < 768) return; // Disable parallax on mobile
       const x = (e.clientX / window.innerWidth - 0.5) * 20;
       const y = (e.clientY / window.innerHeight - 0.5) * 20;
       setMousePosition({ x, y });
@@ -240,7 +268,7 @@ export default function HeroSection() {
 
       {/* Main Content */}
       <motion.div
-        style={{ y, opacity, scale, filter: blur.get() > 0 ? `blur(${blur.get()}px)` : 'none' }}
+        style={!isMobile ? { y, opacity, scale, filter: blur.get() > 0 ? `blur(${blur.get()}px)` : 'none' } : {}}
         className="relative z-10 text-center px-6 max-w-6xl mx-auto will-change-transform"
       >
         {/* Eyebrow Text */}
@@ -272,6 +300,7 @@ export default function HeroSection() {
               text="ZEERAK"
               className="text-white inline-block"
               delay={0.5}
+              isMobile={isMobile}
             />
             <motion.span
               className="text-white/20 hidden md:inline-block"
@@ -285,6 +314,7 @@ export default function HeroSection() {
               text="SHAHZAD"
               className="text-gradient inline-block"
               delay={0.8}
+              isMobile={isMobile}
             />
           </div>
         </div>
