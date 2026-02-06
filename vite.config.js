@@ -19,6 +19,7 @@ export default defineConfig({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-motion': ['framer-motion'],
+          'vendor-icons': ['lucide-react'],
         },
       },
     },
@@ -28,11 +29,19 @@ export default defineConfig({
     cssCodeSplit: true,
     // Chunk size warnings
     chunkSizeWarningLimit: 500,
+    // Minify CSS
+    cssMinify: true,
+    // Source maps only for debugging
+    sourcemap: false,
   },
   // Optimize dev server
   server: {
     hmr: {
       overlay: false,
     },
+  },
+  // Preload optimization
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'framer-motion'],
   },
 })

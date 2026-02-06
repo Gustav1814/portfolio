@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Award, ArrowUp, Heart } from 'lucide-react';
+import { Github, Linkedin, Award, ArrowUp } from 'lucide-react';
 
 import Navigation from "@/components/portfolio/Navigation";
 import HeroSection from "@/components/portfolio/HeroSection";
@@ -11,6 +11,7 @@ import ProjectsSection from "@/components/portfolio/ProjectsSection";
 import CertificationsSection from "@/components/portfolio/CertificationsSection";
 import EducationSection from "@/components/portfolio/EducationSection";
 import ContactSection from "@/components/portfolio/ContactSection";
+import ChatBot from "@/components/portfolio/ChatBot";
 
 export default function Home() {
   const scrollToTop = () => {
@@ -28,6 +29,7 @@ export default function Home() {
       <CertificationsSection />
       <EducationSection />
       <ContactSection />
+      <ChatBot />
 
       {/* Premium Footer */}
       <footer className="relative py-16 bg-black noise-overlay">
@@ -46,11 +48,10 @@ export default function Home() {
               viewport={{ once: true }}
               className="flex items-center gap-3"
             >
-              {/* Premium Monogram Logo */}
-              <div className="relative w-12 h-12 flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 rounded-xl opacity-20 blur-sm" />
-                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/10 to-red-500/10 border border-white/10 flex items-center justify-center">
-                  <span className="text-xl font-bold tracking-wider bg-gradient-to-r from-amber-200 via-orange-300 to-red-400 bg-clip-text text-transparent">ZS</span>
+              {/* Clean Minimal Logo */}
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-red-500 p-[1.5px]">
+                <div className="w-full h-full rounded-[10px] bg-black flex items-center justify-center">
+                  <span className="text-lg font-semibold text-white">ZS</span>
                 </div>
               </div>
               <div>
@@ -105,28 +106,15 @@ export default function Home() {
           {/* Divider */}
           <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-8" />
 
-          {/* Bottom Section */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Bottom Section - Simplified */}
+          <div className="flex items-center justify-center">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="flex items-center gap-2 text-white/30 text-sm tracking-wider"
+              className="text-white/30 text-sm tracking-wider"
             >
-              <span>© 2026</span>
-              <span className="text-gradient font-medium">ZEERAK SHAHZAD</span>
-              <span>- All Rights Reserved</span>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="flex items-center gap-2 text-white/30 text-sm"
-            >
-              <span>Crafted with</span>
-              <Heart className="w-4 h-4 text-red-500 animate-pulse" />
-              <span>in Karachi, Pakistan</span>
+              © 2025 Zeerak Shahzad
             </motion.div>
           </div>
         </div>

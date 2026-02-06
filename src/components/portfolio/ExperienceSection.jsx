@@ -1,48 +1,94 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence, useInView, useScroll, useTransform } from 'framer-motion';
 
 const experiences = [
   {
     id: 1,
-    role: 'IT & Security Intern',
+    role: 'IT & Security Intern – Enterprise Infrastructure',
     company: 'Lucky Textile Mills Limited',
     period: 'Jul 2024 - Sep 2024',
     location: 'Karachi, Pakistan',
-    description: 'Secured business-critical Oracle Databases with RMAN encryption backups. Utilized Splunk for log analysis and security event monitoring. Executed Linux server hardening and automated security tasks using Bash scripting.',
-    achievements: ['Oracle DB Security', 'Splunk SIEM', 'Server Hardening', 'Firewall Audits']
+    description: 'Secured business-critical Oracle Databases by implementing RMAN encryption backups and strict access controls. Utilized Splunk for log analysis and security event monitoring, contributing to incident detection and faster response times.',
+    achievements: [
+      'Oracle DB Security & RMAN Backups',
+      'Splunk SIEM Monitoring',
+      'Linux Server Hardening',
+      'Firewall & VPN Audits',
+      'Bash Security Automation'
+    ]
   },
   {
     id: 2,
-    role: 'IT & Infrastructure Intern',
+    role: 'IT & Infrastructure Intern – Systems & Security',
     company: 'Alkaram Textile Mills Pvt. Ltd',
     period: 'Jun 2024 - Jul 2024',
     location: 'Karachi, Pakistan',
-    description: 'Monitored firewall activity and closed insecure ports to reduce organizational attack surface. Managed database access and conducted log reviews for incident triage.',
-    achievements: ['Perimeter Security', 'Access Control', 'Incident Triage', 'SQL Queries']
+    description: 'Monitored firewall activity and ensured secure configurations, enhancing network defense. Performed SQL queries, data backups, and managed access control. Conducted log reviews to identify security gaps and assisted in incident triage.',
+    achievements: [
+      'Firewall Security & Config',
+      'Database Access Control',
+      'Log Analysis & Incident Triage',
+      'Server Health Monitoring',
+      'Attack Surface Reduction'
+    ]
   },
 ];
 
 export default function ExperienceSection() {
   const [activeExp, setActiveExp] = useState(1);
+  const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const backgroundY = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
   return (
-    <section id="experience" className="relative py-32 md:py-48 bg-black overflow-hidden">
+    <section id="experience" ref={containerRef} className="relative py-32 md:py-48 bg-black overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Background Grid */}
-      <div className="absolute left-0 top-0 bottom-0 w-1/3 bg-[linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+      {/* Animated Background Grid */}
+      <motion.div
+        className="absolute left-0 top-0 bottom-0 w-1/3 pointer-events-none"
+        style={{ y: backgroundY }}
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+      </motion.div>
+
+      {/* Floating orbs */}
+      <motion.div
+        animate={{
+          y: [0, 20, 0],
+          x: [0, 10, 0],
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-1/3 right-1/4 w-48 h-48 rounded-full bg-amber-500/5 blur-3xl"
+      />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          className="flex items-center gap-4 mb-8"
+        >
           <span className="text-xs tracking-[0.4em] text-amber-400/80 uppercase">Career</span>
-          <span className="flex-1 h-px bg-gradient-to-r from-amber-400/40 to-transparent" />
-        </div>
+          <motion.span
+            className="flex-1 h-px bg-gradient-to-r from-amber-400/40 to-transparent"
+            initial={{ scaleX: 0 }}
+            animate={isInView ? { scaleX: 1 } : {}}
+            transition={{ delay: 0.3, duration: 1 }}
+            style={{ transformOrigin: 'left' }}
+          />
+        </motion.div>
 
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.2 }}
           className="text-4xl md:text-5xl lg:text-6xl font-extralight text-white mb-16 leading-[1.1]"
         >
           Professional
@@ -53,34 +99,55 @@ export default function ExperienceSection() {
         <div className="grid lg:grid-cols-[1fr,2fr] gap-12">
           {/* Timeline Navigation */}
           <div className="relative">
-            {/* Vertical Line */}
+            {/* Animated Vertical Line */}
             <div className="absolute left-[11px] top-0 bottom-0 w-px bg-white/10" />
+            <motion.div
+              className="absolute left-[11px] top-0 w-px bg-gradient-to-b from-amber-500 to-red-500"
+              initial={{ height: 0 }}
+              animate={isInView ? { height: `${(activeExp / experiences.length) * 100}%` } : {}}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            />
 
             <div className="space-y-2">
               {experiences.map((exp, index) => (
                 <motion.button
                   key={exp.id}
                   initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ delay: 0.3 + index * 0.1 }}
                   onClick={() => setActiveExp(exp.id)}
                   className={`relative w-full text-left pl-10 py-6 pr-6 rounded-r-2xl transition-all duration-500 ${activeExp === exp.id
-                      ? 'bg-white/5'
-                      : 'hover:bg-white/[0.02]'
+                    ? 'bg-white/5'
+                    : 'hover:bg-white/[0.02]'
                     }`}
+                  whileHover={{ x: 5 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {/* Timeline Dot */}
-                  <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full border-2 transition-all duration-300 ${activeExp === exp.id
-                      ? 'bg-gradient-to-br from-amber-400 to-orange-500 border-amber-400/50 scale-100'
-                      : 'bg-black border-white/20 scale-75'
-                    }`}>
+                  {/* Timeline Dot with pulse effect */}
+                  <motion.div
+                    className={`absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full border-2 transition-all duration-300 ${activeExp === exp.id
+                      ? 'bg-gradient-to-br from-amber-400 to-orange-500 border-amber-400/50'
+                      : 'bg-black border-white/20'
+                      }`}
+                    whileHover={{ scale: 1.2 }}
+                  >
                     {activeExp === exp.id && (
-                      <span className="absolute inset-0 rounded-full bg-amber-400 animate-ping opacity-30" />
+                      <>
+                        <motion.span
+                          className="absolute inset-0 rounded-full bg-amber-400"
+                          animate={{ scale: [1, 1.8, 1], opacity: [0.5, 0, 0.5] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                        <motion.span
+                          className="absolute inset-0 rounded-full bg-amber-400"
+                          animate={{ scale: [1, 2.2, 1], opacity: [0.3, 0, 0.3] }}
+                          transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+                        />
+                      </>
                     )}
-                  </div>
+                  </motion.div>
 
-                  <div className="text-xs text-white/30 tracking-wider mb-1">{exp.period}</div>
+                  <div className="text-xs text-white/30 tracking-wider mb-1 font-mono">{exp.period}</div>
                   <div className={`text-lg transition-colors duration-300 ${activeExp === exp.id ? 'text-white' : 'text-white/50'
                     }`}>
                     {exp.role}
@@ -97,43 +164,76 @@ export default function ExperienceSection() {
               {experiences.filter(e => e.id === activeExp).map(exp => (
                 <motion.div
                   key={exp.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -30 }}
+                  initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -30, filter: 'blur(10px)' }}
                   transition={{ duration: 0.5 }}
-                  className="bg-gradient-to-br from-white/[0.03] to-transparent rounded-3xl p-8 md:p-12 border border-white/5"
+                  className="relative glass-card-premium rounded-3xl p-8 md:p-12 overflow-hidden"
                 >
+                  {/* Background decoration */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-amber-500/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+
                   {/* Header */}
-                  <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
+                  <div className="flex flex-wrap items-start justify-between gap-4 mb-8 relative z-10">
                     <div>
-                      <h3 className="text-2xl md:text-3xl font-light text-white mb-2">{exp.role}</h3>
-                      <div className="flex items-center gap-4 text-white/40">
+                      <motion.h3
+                        className="text-2xl md:text-3xl font-light text-white mb-2"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 }}
+                      >
+                        {exp.role}
+                      </motion.h3>
+                      <motion.div
+                        className="flex items-center gap-4 text-white/40"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                      >
                         <span>{exp.company}</span>
                         <span className="w-1 h-1 bg-white/20 rounded-full" />
                         <span>{exp.location}</span>
-                      </div>
+                      </motion.div>
                     </div>
-                    <div className="px-4 py-2 bg-white/5 rounded-full text-sm text-white/60">
+                    <motion.div
+                      className="px-4 py-2 bg-white/5 rounded-full text-sm text-white/60 border border-white/10 font-mono"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.3, type: 'spring' }}
+                    >
                       {exp.period}
-                    </div>
+                    </motion.div>
                   </div>
 
                   {/* Description */}
-                  <p className="text-white/50 leading-relaxed mb-8 text-lg">
+                  <motion.p
+                    className="text-white/50 leading-relaxed mb-8 text-lg relative z-10"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
                     {exp.description}
-                  </p>
+                  </motion.p>
 
                   {/* Achievements */}
-                  <div>
-                    <div className="text-xs tracking-[0.2em] text-white/30 uppercase mb-4">Key Achievements</div>
+                  <div className="relative z-10">
+                    <motion.div
+                      className="text-xs tracking-[0.2em] text-white/30 uppercase mb-4"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      Key Achievements
+                    </motion.div>
                     <div className="flex flex-wrap gap-3">
                       {exp.achievements.map((achievement, i) => (
                         <motion.span
                           key={achievement}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: i * 0.1 }}
-                          className="px-4 py-2 bg-white/5 rounded-full text-sm text-white/70 border border-white/5"
+                          initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          transition={{ delay: 0.4 + i * 0.1, type: 'spring', stiffness: 200 }}
+                          whileHover={{ scale: 1.05, y: -2 }}
+                          className="px-4 py-2 bg-white/5 rounded-full text-sm text-white/70 border border-white/5 hover:border-amber-500/30 hover:text-amber-300 transition-colors cursor-default"
                         >
                           {achievement}
                         </motion.span>
@@ -142,9 +242,14 @@ export default function ExperienceSection() {
                   </div>
 
                   {/* Decorative Number */}
-                  <div className="absolute top-8 right-8 text-8xl font-bold text-white/[0.02] select-none">
+                  <motion.div
+                    className="absolute top-8 right-8 text-8xl font-bold text-white/[0.02] select-none font-display"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
                     0{exp.id}
-                  </div>
+                  </motion.div>
                 </motion.div>
               ))}
             </AnimatePresence>
