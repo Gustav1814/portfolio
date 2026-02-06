@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mail, MapPin, Linkedin, Github, ArrowRight, CheckCircle, XCircle } from 'lucide-react';
+import { Send, Mail, MapPin, Linkedin, Github, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 const contactInfo = [
