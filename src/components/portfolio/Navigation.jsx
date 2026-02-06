@@ -71,6 +71,11 @@ export default function Navigation() {
                   <span className="text-lg font-bold tracking-wider bg-gradient-to-r from-amber-200 via-orange-300 to-red-400 bg-clip-text text-transparent">ZS</span>
                 </div>
               </div>
+              {/* Title Text */}
+              <div className="hidden sm:block">
+                <div className="text-sm font-light text-white/80 tracking-wide">Cybersecurity Analyst</div>
+                <div className="text-xs text-amber-400/60 tracking-wider">& ISO 27001 Lead Auditor</div>
+              </div>
               <motion.div
                 className="absolute -bottom-1 left-0 h-px bg-gradient-to-r from-amber-400 via-orange-500 to-red-500"
                 initial={{ width: 0 }}
