@@ -5,8 +5,9 @@ import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
 import useLenis from './hooks/useLenis';
+import Preloader from './components/portfolio/Preloader';
 
 // Lazy load the page not found component
 const PageNotFound = lazy(() => import('./lib/PageNotFound'));
@@ -129,32 +130,46 @@ const CustomCursor = () => {
 // Main App with Lenis wrapper
 function AppContent() {
   useLenis(); // Initialize smooth scroll
+  const [isLoading, setIsLoading] = useState(true);
 
   return (
     <>
+      <AnimatePresence mode="wait">
+        {isLoading && <Preloader onComplete={() => setIsLoading(false)} />}
+      </AnimatePresence>
+
       <ScrollProgress />
       <CustomCursor />
-      <Suspense fallback={<LoadingSpinner />}>
-        <Routes>
-          <Route path="/" element={
-            <LayoutWrapper currentPageName={mainPageKey}>
-              <MainPage />
-            </LayoutWrapper>
-          } />
-          {Object.entries(Pages).map(([path, Page]) => (
-            <Route
-              key={path}
-              path={`/${path}`}
-              element={
-                <LayoutWrapper currentPageName={path}>
-                  <Page />
+
+      {!isLoading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
+              <Route path="/" element={
+                <LayoutWrapper currentPageName={mainPageKey}>
+                  <MainPage />
                 </LayoutWrapper>
-              }
-            />
-          ))}
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </Suspense>
+              } />
+              {Object.entries(Pages).map(([path, Page]) => (
+                <Route
+                  key={path}
+                  path={`/${path}`}
+                  element={
+                    <LayoutWrapper currentPageName={path}>
+                      <Page />
+                    </LayoutWrapper>
+                  }
+                />
+              ))}
+              <Route path="*" element={<PageNotFound />} />
+            </Routes>
+          </Suspense>
+        </motion.div>
+      )}
     </>
   );
 }
