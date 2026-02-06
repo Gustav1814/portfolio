@@ -67,6 +67,16 @@ export default function SkillsSection() {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
+  // Detect mobile for simplified layout
+  const [isMobile, setIsMobile] = useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
@@ -115,164 +125,205 @@ export default function SkillsSection() {
           />
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
-          {/* Left - Title & Categories */}
-          <div>
+        {/* MOBILE LAYOUT - Show all categories expanded */}
+        {isMobile ? (
+          <div className="space-y-12">
             <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.2 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-extralight text-white mb-4 leading-[1.1]"
-            >
-              Technical
-              <br />
-              <span className="text-white/40">Arsenal</span>
-            </motion.h2>
-
-            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 }}
-              className="text-white/40 max-w-md mb-12"
+              className="text-3xl font-extralight text-white mb-8"
             >
-              Years of hands-on experience building secure systems and breaking them to make them stronger.
-            </motion.p>
+              Technical <span className="text-white/40">Arsenal</span>
+            </motion.h2>
 
-            {/* Category Tabs */}
-            <div className="flex flex-col gap-3">
-              {skillCategories.map((category, index) => (
-                <motion.button
-                  key={category.id}
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ delay: 0.4 + index * 0.1 }}
-                  onClick={() => setActiveCategory(category.id)}
-                  className={`group relative flex items-center gap-6 p-6 rounded-2xl transition-all duration-500 overflow-hidden ${activeCategory === category.id
-                    ? 'bg-white/5 border border-white/10'
-                    : 'hover:bg-white/[0.02] border border-transparent'
-                    }`}
-                  whileHover={{ x: 5 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {/* Glow effect on active */}
-                  {activeCategory === category.id && (
-                    <motion.div
-                      layoutId="categoryGlow"
-                      className="absolute inset-0 opacity-20"
-                      style={{
-                        background: `radial-gradient(circle at left, ${category.colorHex}40, transparent 70%)`,
-                      }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    />
-                  )}
-
-                  {/* Active Indicator */}
-                  <motion.div
-                    className={`w-1 h-12 rounded-full bg-gradient-to-b ${category.color}`}
-                    animate={{
-                      opacity: activeCategory === category.id ? 1 : 0,
-                      scaleY: activeCategory === category.id ? 1 : 0.5,
-                    }}
-                    transition={{ duration: 0.3 }}
-                  />
-
-                  <div className="text-left relative z-10">
-                    <div className={`text-xl font-light transition-colors duration-300 ${activeCategory === category.id ? 'text-white' : 'text-white/40 group-hover:text-white/70'
-                      }`}>
-                      {category.title}
+            {skillCategories.map((category, catIndex) => (
+              <div key={category.id} className="space-y-4">
+                <div className={`text-lg font-medium bg-gradient-to-r ${category.color} bg-clip-text text-transparent`}>
+                  {category.title}
+                </div>
+                <div className="space-y-3">
+                  {category.skills.map((skill, index) => (
+                    <div key={skill.name}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-white/70">{skill.name}</span>
+                        <span className="text-white/40">{skill.level}%</span>
+                      </div>
+                      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${skill.level}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.8, delay: index * 0.05 }}
+                          className={`h-full bg-gradient-to-r ${category.color} rounded-full`}
+                        />
+                      </div>
                     </div>
-                    <div className="text-xs text-white/30 tracking-wider mt-1">
-                      {category.skills.length} SKILLS
-                    </div>
-                  </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* DESKTOP LAYOUT - Tab navigation */
+          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
+            {/* Left - Title & Categories */}
+            <div>
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.2 }}
+                className="text-4xl md:text-5xl lg:text-6xl font-extralight text-white mb-4 leading-[1.1]"
+              >
+                Technical
+                <br />
+                <span className="text-white/40">Arsenal</span>
+              </motion.h2>
 
-                  {/* Arrow */}
-                  <motion.div
-                    className="ml-auto text-xl"
-                    animate={{
-                      opacity: activeCategory === category.id ? 1 : 0,
-                      x: activeCategory === category.id ? 0 : -10,
-                    }}
-                    transition={{ duration: 0.3 }}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.3 }}
+                className="text-white/40 max-w-md mb-12"
+              >
+                Years of hands-on experience building secure systems and breaking them to make them stronger.
+              </motion.p>
+
+              {/* Category Tabs */}
+              <div className="flex flex-col gap-3">
+                {skillCategories.map((category, index) => (
+                  <motion.button
+                    key={category.id}
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ delay: 0.4 + index * 0.1 }}
+                    onClick={() => setActiveCategory(category.id)}
+                    className={`group relative flex items-center gap-6 p-6 rounded-2xl transition-all duration-500 overflow-hidden ${activeCategory === category.id
+                      ? 'bg-white/5 border border-white/10'
+                      : 'hover:bg-white/[0.02] border border-transparent'
+                      }`}
+                    whileHover={{ x: 5 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <span className="text-gradient">→</span>
-                  </motion.div>
-                </motion.button>
-              ))}
+                    {/* Glow effect on active */}
+                    {activeCategory === category.id && (
+                      <motion.div
+                        layoutId="categoryGlow"
+                        className="absolute inset-0 opacity-20"
+                        style={{
+                          background: `radial-gradient(circle at left, ${category.colorHex}40, transparent 70%)`,
+                        }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      />
+                    )}
+
+                    {/* Active Indicator */}
+                    <motion.div
+                      className={`w-1 h-12 rounded-full bg-gradient-to-b ${category.color}`}
+                      animate={{
+                        opacity: activeCategory === category.id ? 1 : 0,
+                        scaleY: activeCategory === category.id ? 1 : 0.5,
+                      }}
+                      transition={{ duration: 0.3 }}
+                    />
+
+                    <div className="text-left relative z-10">
+                      <div className={`text-xl font-light transition-colors duration-300 ${activeCategory === category.id ? 'text-white' : 'text-white/40 group-hover:text-white/70'
+                        }`}>
+                        {category.title}
+                      </div>
+                      <div className="text-xs text-white/30 tracking-wider mt-1">
+                        {category.skills.length} SKILLS
+                      </div>
+                    </div>
+
+                    {/* Arrow */}
+                    <motion.div
+                      className="ml-auto text-xl"
+                      animate={{
+                        opacity: activeCategory === category.id ? 1 : 0,
+                        x: activeCategory === category.id ? 0 : -10,
+                      }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <span className="text-gradient">→</span>
+                    </motion.div>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
+            {/* Right - Skills Display */}
+            <div className="relative">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeCategory}
+                  initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -30, filter: 'blur(10px)' }}
+                  transition={{ duration: 0.5 }}
+                  className="space-y-8"
+                >
+                  {activeData?.skills.map((skill, index) => (
+                    <motion.div
+                      key={skill.name}
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.08 }}
+                      className="group"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-white/70 group-hover:text-white transition-colors duration-300">
+                          {skill.name}
+                        </span>
+                        <motion.span
+                          className="text-white/30 text-sm tabular-nums font-mono"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.3 + index * 0.08 }}
+                        >
+                          {skill.level}%
+                        </motion.span>
+                      </div>
+                      <div className="relative h-2 bg-white/5 rounded-full overflow-hidden group-hover:bg-white/10 transition-colors">
+                        {/* Background glow */}
+                        <motion.div
+                          className="absolute inset-y-0 left-0 rounded-full opacity-50"
+                          style={{
+                            background: `linear-gradient(90deg, ${activeData.colorHex}40, transparent)`,
+                          }}
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${skill.level}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1.2, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                        />
+                        {/* Main bar */}
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${skill.level}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                          className={`absolute inset-y-0 left-0 bg-gradient-to-r ${activeData.color} rounded-full`}
+                        />
+                        {/* Shine effect */}
+                        <motion.div
+                          className="absolute inset-y-0 w-20 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                          initial={{ left: '-20%' }}
+                          whileInView={{ left: '120%' }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1.2, delay: 0.5 + index * 0.08 }}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Decorative elements */}
+              <div className="absolute -top-10 -right-10 w-40 h-40 border border-white/5 rounded-full pointer-events-none" />
+              <div className="absolute -bottom-10 -left-10 w-20 h-20 border border-white/5 rounded-full pointer-events-none" />
             </div>
           </div>
-
-          {/* Right - Skills Display */}
-          <div className="relative">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeCategory}
-                initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -30, filter: 'blur(10px)' }}
-                transition={{ duration: 0.5 }}
-                className="space-y-8"
-              >
-                {activeData?.skills.map((skill, index) => (
-                  <motion.div
-                    key={skill.name}
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.08 }}
-                    className="group"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-white/70 group-hover:text-white transition-colors duration-300">
-                        {skill.name}
-                      </span>
-                      <motion.span
-                        className="text-white/30 text-sm tabular-nums font-mono"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.3 + index * 0.08 }}
-                      >
-                        {skill.level}%
-                      </motion.span>
-                    </div>
-                    <div className="relative h-2 bg-white/5 rounded-full overflow-hidden group-hover:bg-white/10 transition-colors">
-                      {/* Background glow */}
-                      <motion.div
-                        className="absolute inset-y-0 left-0 rounded-full opacity-50"
-                        style={{
-                          background: `linear-gradient(90deg, ${activeData.colorHex}40, transparent)`,
-                        }}
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1.2, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                      />
-                      {/* Main bar */}
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                        className={`absolute inset-y-0 left-0 bg-gradient-to-r ${activeData.color} rounded-full`}
-                      />
-                      {/* Shine effect */}
-                      <motion.div
-                        className="absolute inset-y-0 w-20 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                        initial={{ left: '-20%' }}
-                        whileInView={{ left: '120%' }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1.2, delay: 0.5 + index * 0.08 }}
-                      />
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Decorative elements */}
-            <div className="absolute -top-10 -right-10 w-40 h-40 border border-white/5 rounded-full pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-20 h-20 border border-white/5 rounded-full pointer-events-none" />
-          </div>
-        </div>
+        )}
 
         {/* Tools Marquee */}
         <motion.div
