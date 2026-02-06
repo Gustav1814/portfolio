@@ -63,6 +63,15 @@ export default function ContactSection() {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
+  // Mobile check
+  const [isMobile, setIsMobile] = useState(false);
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -106,23 +115,27 @@ export default function ContactSection() {
     <section id="contact" ref={containerRef} className="relative py-32 md:py-48 bg-black overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Animated Background Accents */}
-      <motion.div
-        animate={{
-          x: [0, 20, 0],
-          y: [0, -20, 0],
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/4 left-0 w-[400px] h-[400px] rounded-full bg-amber-500/5 blur-[80px]"
-      />
-      <motion.div
-        animate={{
-          x: [0, -20, 0],
-          y: [0, 20, 0],
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-1/4 right-0 w-[300px] h-[300px] rounded-full bg-red-500/5 blur-[80px]"
-      />
+      {/* Animated Background Accents - Desktop Only */}
+      {!isMobile && (
+        <>
+          <motion.div
+            animate={{
+              x: [0, 20, 0],
+              y: [0, -20, 0],
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-1/4 left-0 w-[400px] h-[400px] rounded-full bg-amber-500/5 blur-[80px]"
+          />
+          <motion.div
+            animate={{
+              x: [0, -20, 0],
+              y: [0, 20, 0],
+            }}
+            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute bottom-1/4 right-0 w-[300px] h-[300px] rounded-full bg-red-500/5 blur-[80px]"
+          />
+        </>
+      )}
 
       {/* Large Background Text */}
       <motion.div

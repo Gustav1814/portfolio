@@ -46,11 +46,41 @@ const projects = [
 ];
 
 // 3D Tilt Project Card
-const ProjectCard = ({ project, index }) => {
+// 3D Tilt Project Card (Desktop) / Static Card (Mobile)
+const ProjectCard = ({ project, index, isMobile }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
+
+  // If mobile, render simplified static version
+  if (isMobile) {
+    return (
+      <div className="relative rounded-2xl overflow-hidden bg-neutral-900 border border-white/10">
+        <div className="aspect-[4/3] relative">
+          <img
+            src={project.image}
+            alt={project.title}
+            className="w-full h-full object-cover opacity-80"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+
+          <div className="absolute inset-0 p-6 flex flex-col justify-end">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="px-2 py-1 bg-white/10 rounded-md text-[10px] text-white/80 uppercase tracking-wider">{project.category}</span>
+            </div>
+            <h3 className="text-xl font-light text-white mb-2">{project.title}</h3>
+
+            <div className="flex gap-3 mt-2">
+              {project.github && <a href={project.github} className="text-amber-400 text-xs uppercase tracking-widest">GITHUB</a>}
+              {project.demo && <a href={project.demo} className="text-red-400 text-xs uppercase tracking-widest">DEMO</a>}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleMouseMove = (e) => {
     if (!ref.current) return;
@@ -207,6 +237,16 @@ const ProjectCard = ({ project, index }) => {
 export default function ProjectsSection() {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+
+  // Mobile check
+  const [isMobile, setIsMobile] = useState(false);
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
@@ -218,14 +258,16 @@ export default function ProjectsSection() {
     <section id="projects" ref={containerRef} className="relative py-32 md:py-48 bg-black overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Animated background */}
-      <motion.div
-        className="absolute inset-0 opacity-30"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(251,191,36,0.05) 0%, transparent 50%)',
-          x: backgroundX,
-        }}
-      />
+      {/* Animated background - Desktop Only */}
+      {!isMobile && (
+        <motion.div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(251,191,36,0.05) 0%, transparent 50%)',
+            x: backgroundX,
+          }}
+        />
+      )}
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Header */}
@@ -271,7 +313,7 @@ export default function ProjectsSection() {
         {/* Projects Grid */}
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {projects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
+            <ProjectCard key={project.id} project={project} index={index} isMobile={isMobile} />
           ))}
         </div>
 

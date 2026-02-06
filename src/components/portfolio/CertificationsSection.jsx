@@ -19,11 +19,24 @@ const achievements = [
   { title: 'SIEM Engineer', platform: 'Splunk & Wazuh', stat: 'Advanced', desc: 'Threat Detection', icon: Lock },
 ];
 
-// Certification Card with 3D hover effect
-const CertCard = ({ cert, index }) => {
+// Certification Card with 3D hover effect (Desktop) / Static (Mobile)
+const CertCard = ({ cert, index, isMobile }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const ref = useRef(null);
+
+  if (isMobile) {
+    return (
+      <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs text-white/30 font-mono">{cert.year}</span>
+          {cert.url && <ExternalLink className="w-4 h-4 text-amber-500/50" />}
+        </div>
+        <div className="text-lg font-light text-white mb-1">{cert.name}</div>
+        <div className="text-xs text-white/40">{cert.issuer}</div>
+      </div>
+    );
+  }
 
   const handleMouseMove = (e) => {
     if (!ref.current) return;
@@ -107,27 +120,40 @@ export default function CertificationsSection() {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
+  // Mobile check
+  const [isMobile, setIsMobile] = useState(false);
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <section id="certifications" ref={containerRef} className="relative py-32 md:py-48 bg-black overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Floating background elements */}
-      <motion.div
-        animate={{
-          y: [0, -20, 0],
-          rotate: [0, 5, 0],
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/4 right-1/4 w-32 h-32 border border-amber-500/10 rounded-full"
-      />
-      <motion.div
-        animate={{
-          y: [0, 20, 0],
-          rotate: [0, -5, 0],
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-1/3 left-1/4 w-24 h-24 border border-red-500/10 rounded-2xl"
-      />
+      {/* Floating background elements - Desktop Only */}
+      {!isMobile && (
+        <>
+          <motion.div
+            animate={{
+              y: [0, -20, 0],
+              rotate: [0, 5, 0],
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-1/4 right-1/4 w-32 h-32 border border-amber-500/10 rounded-full"
+          />
+          <motion.div
+            animate={{
+              y: [0, 20, 0],
+              rotate: [0, -5, 0],
+            }}
+            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute bottom-1/3 left-1/4 w-24 h-24 border border-red-500/10 rounded-2xl"
+          />
+        </>
+      )}
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Header */}
@@ -162,7 +188,7 @@ export default function CertificationsSection() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {certifications.map((cert, index) => (
-                <CertCard key={cert.name} cert={cert} index={index} />
+                <CertCard key={cert.name} cert={cert} index={index} isMobile={isMobile} />
               ))}
             </div>
           </div>

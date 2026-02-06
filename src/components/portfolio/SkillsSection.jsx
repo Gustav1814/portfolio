@@ -89,14 +89,16 @@ export default function SkillsSection() {
     <section id="skills" ref={containerRef} className="relative py-32 md:py-48 bg-black overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Animated Background */}
-      <motion.div
-        className="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-[600px] will-change-transform"
-        style={{
-          background: 'radial-gradient(ellipse at right, rgba(251,191,36,0.05) 0%, transparent 70%)',
-          y: backgroundY,
-        }}
-      />
+      {/* Animated Background - Desktop Only */}
+      {!isMobile && (
+        <motion.div
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-[600px] will-change-transform"
+          style={{
+            background: 'radial-gradient(ellipse at right, rgba(251,191,36,0.05) 0%, transparent 70%)',
+            y: backgroundY,
+          }}
+        />
+      )}
 
       {/* Floating orbs */}
       <motion.div
@@ -125,35 +127,28 @@ export default function SkillsSection() {
           />
         </motion.div>
 
-        {/* MOBILE LAYOUT - Show all categories expanded */}
+        {/* MOBILE LAYOUT - Show all categories expanded (Simplified for Perf) */}
         {isMobile ? (
           <div className="space-y-12">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              className="text-3xl font-extralight text-white mb-8"
-            >
+            <h2 className="text-3xl font-extralight text-white mb-8">
               Technical <span className="text-white/40">Arsenal</span>
-            </motion.h2>
+            </h2>
 
-            {skillCategories.map((category, catIndex) => (
+            {skillCategories.map((category) => (
               <div key={category.id} className="space-y-4">
                 <div className={`text-lg font-medium bg-gradient-to-r ${category.color} bg-clip-text text-transparent`}>
                   {category.title}
                 </div>
                 <div className="space-y-3">
-                  {category.skills.map((skill, index) => (
+                  {category.skills.map((skill) => (
                     <div key={skill.name}>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-white/70">{skill.name}</span>
                         <span className="text-white/40">{skill.level}%</span>
                       </div>
                       <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${skill.level}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.8, delay: index * 0.05 }}
+                        <div
+                          style={{ width: `${skill.level}%` }}
                           className={`h-full bg-gradient-to-r ${category.color} rounded-full`}
                         />
                       </div>
