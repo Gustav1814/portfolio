@@ -4,6 +4,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // Lazy load the page not found component
 const PageNotFound = lazy(() => import('./lib/PageNotFound'));
@@ -53,6 +54,7 @@ function App() {
         </Suspense>
       </Router>
       <Toaster />
+      <SpeedInsights />
     </QueryClientProvider>
   )
 }
