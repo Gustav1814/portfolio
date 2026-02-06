@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Send, Mail, Phone, Linkedin, Github } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
+import { Send, Mail, MapPin, Linkedin, Github, ArrowRight, CheckCircle, XCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
-const contactLinks = [
-  { label: 'Email', value: 'zeerak.shahzad2000@outlook.com', href: 'mailto:zeerak.shahzad2000@outlook.com', icon: Mail },
-  { label: 'Phone', value: '+92 (313) 2349459', href: 'tel:+923132349459', icon: Phone },
-  { label: 'LinkedIn', value: 'linkedin.com/in/zeerakshahzad1814', href: 'https://www.linkedin.com/in/zeerakshahzad1814', icon: Linkedin },
-  { label: 'GitHub', value: 'github.com/gustav1814', href: 'https://github.com/gustav1814', icon: Github },
+const contactInfo = [
+  { icon: Mail, label: 'Email', value: 'zeerak.shahzad2000@outlook.com', href: 'mailto:zeerak.shahzad2000@outlook.com' },
+  { icon: MapPin, label: 'Location', value: 'Pakistan', href: null },
+  { icon: Linkedin, label: 'LinkedIn', value: 'in/zeerakshahzad1814', href: 'https://www.linkedin.com/in/zeerakshahzad1814' },
+  { icon: Github, label: 'GitHub', value: 'gustav1814', href: 'https://github.com/gustav1814' },
 ];
 
 export default function ContactSection() {
@@ -20,10 +17,38 @@ export default function ContactSection() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: '90c71253-0afe-4bc8-af7c-c5ee6ebcfaa1',
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          to: 'zeerakshahzad2@gmail.com',
+          subject: `Portfolio Contact: ${formData.name}`,
+          from_name: 'ZS Portfolio',
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success('Message sent successfully! I\'ll get back to you soon.');
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        toast.error('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      toast.error('Network error. Please try again later.');
+    }
+
     setIsSubmitting(false);
-    toast.success('Message sent successfully!');
-    setFormData({ name: '', email: '', message: '' });
   };
 
   return (
@@ -48,138 +73,125 @@ export default function ContactSection() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
-          {/* Left Column */}
-          <div>
-            <div className="flex items-center gap-4 mb-8">
-              <span className="text-xs tracking-[0.5em] text-amber-400/80 uppercase font-medium">Contact</span>
-              <span className="flex-1 h-px bg-gradient-to-r from-amber-400/40 to-transparent" />
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-20"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-8">
+            <div className="w-2 h-2 rounded-full bg-gradient-to-r from-amber-400 to-red-500 animate-pulse" />
+            <span className="text-sm font-light tracking-[0.2em] text-white/60 uppercase">Get in Touch</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-extralight text-white mb-6 font-display">
+            Let's <span className="text-gradient font-light">Connect</span>
+          </h2>
+          <p className="text-lg text-white/40 max-w-2xl mx-auto font-light">
+            Have a project in mind or want to discuss cybersecurity? I'd love to hear from you.
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-16 items-start">
+          {/* Contact Info */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="space-y-8"
+          >
+            <div>
+              <h3 className="text-2xl font-light text-white mb-4">Contact Information</h3>
+              <p className="text-white/40 font-light leading-relaxed">
+                Feel free to reach out through any of these channels. I'm always open to discussing
+                new projects, creative ideas, or opportunities to be part of your cybersecurity initiatives.
+              </p>
             </div>
 
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-4xl md:text-5xl lg:text-6xl font-extralight text-white mb-8 leading-[1.1] font-display"
-            >
-              Let's build
-              <br />
-              <span className="text-gradient">something secure</span>
-            </motion.h2>
-
-            <p className="text-white/40 max-w-md mb-12 leading-relaxed">
-              Have a project in mind or want to discuss security?
-              I'm always open to interesting opportunities and collaborations.
-            </p>
-
-            {/* Contact Links */}
-            <div className="space-y-3">
-              {contactLinks.map((link, index) => (
+            <div className="space-y-6">
+              {contactInfo.map((item, idx) => (
                 <motion.a
-                  key={link.label}
-                  href={link.href}
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  key={item.label}
+                  href={item.href || '#'}
+                  target={item.href?.startsWith('http') ? '_blank' : undefined}
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group flex items-center justify-between p-5 rounded-2xl glass-hover"
+                  transition={{ delay: idx * 0.1 }}
+                  whileHover={{ x: 10 }}
+                  className={`group flex items-center gap-4 p-4 rounded-xl glass-card transition-all ${item.href ? 'cursor-pointer hover:border-amber-500/30' : 'cursor-default'}`}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500/10 to-red-500/10 border border-white/5 group-hover:border-amber-500/30 transition-colors">
-                      <link.icon className="w-4 h-4 text-white/50 group-hover:text-amber-400 transition-colors" />
-                    </div>
-                    <div>
-                      <div className="text-xs text-white/30 tracking-wider uppercase mb-1">{link.label}</div>
-                      <div className="text-white/70 group-hover:text-white transition-colors">{link.value}</div>
-                    </div>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-red-500/20 flex items-center justify-center group-hover:from-amber-500/30 group-hover:to-red-500/30 transition-all">
+                    <item.icon className="w-5 h-5 text-amber-400" />
                   </div>
-                  <ArrowUpRight className="w-5 h-5 text-white/20 group-hover:text-amber-400 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
+                  <div>
+                    <div className="text-xs text-white/40 uppercase tracking-wider">{item.label}</div>
+                    <div className="text-white/80 font-light">{item.value}</div>
+                  </div>
+                  {item.href && <ArrowRight className="w-4 h-4 text-white/20 ml-auto group-hover:text-amber-400 transition-colors" />}
                 </motion.a>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Right Column - Form */}
+          {/* Contact Form */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-xs tracking-[0.2em] text-white/40 uppercase mb-3 font-medium">Your Name</label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="ZEERAK SHAHZAD"
-                    required
-                    className="bg-white/[0.03] border-white/10 text-white placeholder:text-white/20 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl h-14 px-5 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs tracking-[0.2em] text-white/40 uppercase mb-3 font-medium">Email Address</label>
-                  <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="your@email.com"
-                    required
-                    className="bg-white/[0.03] border-white/10 text-white placeholder:text-white/20 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl h-14 px-5 transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs tracking-[0.2em] text-white/40 uppercase mb-3 font-medium">Message</label>
-                <Textarea
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="Tell me about your project or security needs..."
-                  rows={6}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="bg-white/[0.03] border-white/10 text-white placeholder:text-white/20 focus:border-amber-500/50 focus:ring-amber-500/20 rounded-xl p-5 resize-none transition-all"
+                  className="w-full px-6 py-4 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500/50 transition-colors font-light"
                 />
               </div>
-
-              <Button
+              <div className="relative">
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                  className="w-full px-6 py-4 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500/50 transition-colors font-light"
+                />
+              </div>
+              <div className="relative">
+                <textarea
+                  placeholder="Your Message"
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  required
+                  rows={5}
+                  className="w-full px-6 py-4 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-amber-500/50 transition-colors resize-none font-light"
+                />
+              </div>
+              <motion.button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-14 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:via-orange-600 hover:to-red-600 text-black font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 glow-amber-hover"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-4 px-8 bg-gradient-to-r from-amber-500 to-red-500 rounded-xl text-white font-medium flex items-center justify-center gap-3 hover:opacity-90 transition-opacity disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <span className="flex items-center gap-3">
-                    <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Sending...
-                  </span>
+                  </>
                 ) : (
-                  <span className="flex items-center gap-3">
+                  <>
+                    <Send className="w-5 h-5" />
                     Send Message
-                    <Send className="w-4 h-4" />
-                  </span>
+                  </>
                 )}
-              </Button>
+              </motion.button>
             </form>
-
-            {/* Availability Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="mt-8 p-6 rounded-2xl glass-card"
-            >
-              <div className="flex items-center gap-4">
-                <span className="relative flex h-3.5 w-3.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
-                </span>
-                <div>
-                  <div className="text-white/80 font-medium">Available for new projects</div>
-                  <div className="text-white/40 text-sm">Typically respond within 24 hours</div>
-                </div>
-              </div>
-            </motion.div>
           </motion.div>
         </div>
       </div>
