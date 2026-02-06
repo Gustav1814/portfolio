@@ -131,37 +131,37 @@ export default function AboutSection() {
               className="relative perspective-1000"
             >
               {/* Image Frame */}
-              <div className="relative aspect-[4/5] max-w-md mx-auto">
+              <div className="relative aspect-[3/4] sm:aspect-[4/5] max-w-xs sm:max-w-md mx-auto">
                 {/* Rotating decorative borders */}
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-                  className="absolute -inset-4 rounded-3xl border border-dashed border-amber-500/10"
+                  className="absolute -inset-4 rounded-3xl border border-dashed border-amber-500/10 hidden sm:block"
                 />
                 <motion.div
                   animate={{ rotate: -360 }}
                   transition={{ duration: 45, repeat: Infinity, ease: 'linear' }}
-                  className="absolute -inset-8 rounded-3xl border border-dashed border-red-500/10"
+                  className="absolute -inset-8 rounded-3xl border border-dashed border-red-500/10 hidden sm:block"
                 />
 
                 {/* Static decorative elements */}
                 <motion.div
                   style={{ x: mousePosition.x * 0.3, y: mousePosition.y * 0.3 }}
-                  className="absolute -top-6 -left-6 w-full h-full border border-amber-500/20 rounded-3xl"
+                  className="absolute -top-4 -left-4 sm:-top-6 sm:-left-6 w-full h-full border border-amber-500/20 rounded-3xl hidden sm:block"
                 />
                 <motion.div
                   style={{ x: mousePosition.x * -0.2, y: mousePosition.y * -0.2 }}
-                  className="absolute -bottom-6 -right-6 w-full h-full border border-red-500/20 rounded-3xl"
+                  className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 w-full h-full border border-red-500/20 rounded-3xl hidden sm:block"
                 />
 
                 {/* Glowing Border Effect */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-500/20 via-transparent to-red-500/20 p-[1px]">
-                  <div className="w-full h-full rounded-3xl bg-black" />
+                <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-amber-500/20 via-transparent to-red-500/20 p-[1px]">
+                  <div className="w-full h-full rounded-2xl sm:rounded-3xl bg-black" />
                 </div>
 
                 {/* Main Image Container */}
                 <motion.div
-                  className="relative h-full rounded-3xl overflow-hidden border border-white/10 group"
+                  className="relative h-full rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 group"
                   style={{ x: mousePosition.x * 0.1, y: mousePosition.y * 0.1 }}
                 >
                   <img
@@ -169,7 +169,7 @@ export default function AboutSection() {
                     alt="ZEERAK SHAHZAD - Cybersecurity Analyst"
                     loading="lazy"
                     decoding="async"
-                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                     style={{
                       filter: 'contrast(1.1) saturate(0.85) brightness(0.95)',
                     }}
