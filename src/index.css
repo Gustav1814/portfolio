@@ -765,26 +765,48 @@
 /* ===== MOBILE PERFORMANCE OPTIMIZATIONS ===== */
 @media (max-width: 768px) {
 
-  /* Reduce blur intensity on mobile for better performance */
-  .backdrop-blur-xl {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  /* Use native smooth scroll */
+  html {
+    scroll-behavior: smooth;
   }
 
+  /* Disable heavy blur on mobile - causes major lag */
+  .backdrop-blur-xl,
   .backdrop-blur-2xl,
   .backdrop-blur-3xl {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* Disable will-change on mobile - uses too much memory */
+  * {
+    will-change: auto !important;
   }
 
   /* Faster transitions on mobile */
-  .transition-all {
-    transition-duration: 200ms;
+  .transition-all,
+  .transition-transform,
+  .transition-opacity {
+    transition-duration: 150ms !important;
   }
 
   /* Reduce shadow complexity on mobile */
-  .shadow-2xl {
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  .shadow-2xl,
+  .shadow-xl {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Disable complex transforms */
+  .transform-style-3d,
+  .perspective-1000 {
+    perspective: none;
+    transform-style: flat;
+  }
+
+  /* Disable floating particle effects on mobile */
+  .absolute.opacity-20,
+  .absolute.opacity-30 {
+    display: none;
   }
 }
 

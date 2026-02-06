@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Lenis from '@studio-freight/lenis';
 
 // Global lenis instance for external access
@@ -14,29 +14,46 @@ export const scrollTo = (target, options = {}) => {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       ...options,
     });
+  } else {
+    // Fallback for mobile - use native scroll
+    const element = typeof target === 'string' ? document.querySelector(target) : target;
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 };
 
 export default function useLenis() {
   const lenisRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Initialize Lenis with ultra-smooth settings
+    // Check if mobile/touch device
+    const checkMobile = () => {
+      return window.innerWidth < 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    };
+
+    const mobile = checkMobile();
+    setIsMobile(mobile);
+
+    // Skip Lenis entirely on mobile for native smooth scroll
+    if (mobile) {
+      return;
+    }
+
+    // Initialize Lenis only on desktop
     const lenis = new Lenis({
-      duration: 1.2, // Smooth scroll duration
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // SpaceX-style easing
-      direction: 'vertical',
-      gestureDirection: 'vertical',
-      smooth: true,
-      smoothTouch: false, // Disabled for better iOS performance
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
       touchMultiplier: 2,
-      infinite: false,
     });
 
     lenisRef.current = lenis;
     lenisInstance = lenis;
 
-    // RAF loop for smooth updates
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -44,7 +61,6 @@ export default function useLenis() {
 
     requestAnimationFrame(raf);
 
-    // Cleanup
     return () => {
       lenis.destroy();
       lenisInstance = null;
